@@ -156,6 +156,7 @@ body {
 
 .sidebar {
   width: 280px;
+  min-width: 280px;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
   display: flex;
@@ -163,32 +164,38 @@ body {
   padding: 22px;
   gap: 20px;
   position: relative;
-  z-index: 2;
+  z-index: 10;
   height: 100vh;
   max-height: 100vh;
-  overflow-y: auto;
+  overflow-y: auto !important;
   overflow-x: hidden;
   flex-shrink: 0;
+  overscroll-behavior-y: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(0, 0, 0, 0.3);
+}
+
+.sidebar > * {
+  flex-shrink: 0;
 }
 
 .sidebar::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .sidebar::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.25);
   border-radius: var(--radius-full);
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.45);
 }
+
 
 .brand {
   display: flex;

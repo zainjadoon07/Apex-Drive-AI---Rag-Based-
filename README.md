@@ -104,7 +104,7 @@ The indexing pipeline is 100% re-runnable without re-indexing unchanged document
 
 ## 4. Phase II — Retrieval Integration (`retrieval.py` + `prompts.py`)
 
-### A. Top-$k$ Selection ($k=4$)
+### A. Top-k Selection ($k=4$)
 We configure $k = 4$ retrieved chunks (exceeding the assignment requirement of $k \ge 3$). Four chunks provide sufficient coverage across multi-part customer questions (e.g., "What cars seat 7 and what is the Gold insurance deductible?") without bloating the prompt.
 
 ### B. Context Budget Management Strategy

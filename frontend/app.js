@@ -130,6 +130,9 @@ function connectWebSocket() {
   };
 }
 
+const citationStore = {};
+let nextCitationId = 1;
+
 // Render visible citation pills
 function renderCitations(bubbleEl, citations, retrievalMs, isCached) {
   if (!bubbleEl || !citations || citations.length === 0) return;
@@ -153,13 +156,19 @@ function renderCitations(bubbleEl, citations, retrievalMs, isCached) {
   `;
 
   let pillsHTML = '<div class="citation-pills-list">';
-  citations.forEach((cit, index) => {
+  citations.forEach((cit) => {
+    const citId = "cit_" + (nextCitationId++);
+    citationStore[citId] = cit;
+
     const safeTitle = escapeHTML(cit.title || cit.doc_id || "Document");
     const safeCat = escapeHTML(cit.category || "Policy");
+    const safeSec = cit.section ? escapeHTML(cit.section) : "";
+    const displayLabel = safeSec && safeSec !== safeTitle ? `${safeTitle} &middot; <em style="opacity:0.8;font-style:normal;">${safeSec}</em>` : safeTitle;
+
     pillsHTML += `
-      <button class="citation-pill" onclick="openCitationModal(${index})" title="Click to view verified excerpt">
+      <button type="button" class="citation-pill" data-cit-id="${citId}" onclick="openCitationModal('${citId}')" title="Click to view verified excerpt">
         <span class="citation-pill-cat">${safeCat}</span>
-        <span class="citation-pill-title">${safeTitle}</span>
+        <span class="citation-pill-title">${displayLabel}</span>
         <i data-lucide="chevron-right" class="icon-xxs"></i>
       </button>
     `;
@@ -171,9 +180,12 @@ function renderCitations(bubbleEl, citations, retrievalMs, isCached) {
 }
 
 // Citation Modal Viewer (Interactive Excerpt Drawer)
-window.openCitationModal = function(index) {
-  const cit = currentCitations[index];
-  if (!cit) return;
+window.openCitationModal = function(citId) {
+  const cit = citationStore[citId];
+  if (!cit) {
+    console.warn("No citation data found for ID:", citId);
+    return;
+  }
 
   const modal = document.getElementById("citation-modal");
   const titleEl = document.getElementById("modal-doc-title");
@@ -182,7 +194,7 @@ window.openCitationModal = function(index) {
   const excerptEl = document.getElementById("modal-doc-excerpt");
 
   if (titleEl) titleEl.innerText = cit.title || "Document Excerpt";
-  if (metaEl) metaEl.innerText = `${cit.category || 'General'} · Section: ${cit.section || 'Policy'}`;
+  if (metaEl) metaEl.innerText = `${cit.category || 'General'} · Section: ${cit.section || 'General Policy'}`;
   if (fileEl) fileEl.innerText = cit.source_file || "Internal Database";
   if (excerptEl) excerptEl.innerText = cit.excerpt || "No excerpt text available.";
 
@@ -190,10 +202,21 @@ window.openCitationModal = function(index) {
   if (window.lucide) lucide.createIcons();
 };
 
-window.closeCitationModal = function() {
+window.closeCitationModal = function(event) {
+  if (event && event.target && event.target.id !== "citation-modal" && !event.target.classList.contains("modal-close-btn")) {
+    return;
+  }
   const modal = document.getElementById("citation-modal");
   if (modal) modal.style.display = "none";
 };
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = document.getElementById("citation-modal");
+    if (modal) modal.style.display = "none";
+  }
+});
+
 
 // Send user message
 function sendMessage(text) {
