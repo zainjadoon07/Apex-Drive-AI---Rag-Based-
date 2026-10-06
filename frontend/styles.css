@@ -166,8 +166,7 @@ body {
   position: relative;
   z-index: 10;
   height: 100vh;
-  max-height: 100vh;
-  overflow-y: auto !important;
+  overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
   overscroll-behavior-y: contain;
@@ -195,7 +194,6 @@ body {
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.45);
 }
-
 
 .brand {
   display: flex;
@@ -371,7 +369,7 @@ body {
 }
 
 .sidebar-footer {
-  margin-top: auto;
+  margin-top: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -759,14 +757,14 @@ body {
   color: var(--text-muted-white);
 }
 
-/* Send Button — icon-only circle */
+/* Send Button — text label */
 #send-btn {
   background: var(--text-full-white);
   color: #000000;
   border: 1px solid var(--text-full-white);
-  width: 36px;
+  padding: 0 18px;
   height: 36px;
-  min-width: 36px;
+  min-width: 60px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -774,13 +772,16 @@ body {
   cursor: pointer;
   transition: var(--transition-smooth);
   flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 #send-btn:hover {
   background: #000000;
   color: #ffffff;
   border-color: #ffffff;
-  transform: scale(1.08);
+  transform: scale(1.05);
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.18);
 }
 

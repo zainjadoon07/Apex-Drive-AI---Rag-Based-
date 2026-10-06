@@ -83,9 +83,9 @@ function connectWebSocket() {
           const metricsEl = currentBotBubble.querySelector(".metrics-tag");
           if (metricsEl && data.metrics) {
             const m = data.metrics;
-            const cacheBadge = m.is_cached ? '<span class="metric-pill cache-hit">⚡ Cache Hit</span>' : '';
+            const cacheBadge = m.is_cached ? '<span class="metric-pill cache-hit">Cache Hit</span>' : '';
             metricsEl.innerHTML = `
-              <span class="rag-latency">⚡ RAG: ${m.retrieval_ms || 0}ms</span>
+              <span class="rag-latency">RAG: ${m.retrieval_ms || 0}ms</span>
               <span class="ttft">TTFT: ${m.ttft_ms || 0}ms</span>
               <span>Speed: ${m.tps || 0} tok/s</span>
               <span>Total: ${m.total_time_s || 0}s</span>
@@ -103,7 +103,7 @@ function connectWebSocket() {
         currentBotText = "";
         currentCitations = [];
         messageInput.focus();
-        if (window.lucide) lucide.createIcons();
+
       }
 
       // 4. Error packet
@@ -176,7 +176,6 @@ function renderCitations(bubbleEl, citations, retrievalMs, isCached) {
   pillsHTML += '</div>';
 
   shelfEl.innerHTML = headerHTML + pillsHTML;
-  if (window.lucide) lucide.createIcons();
 }
 
 // Citation Modal Viewer (Interactive Excerpt Drawer)
@@ -199,7 +198,6 @@ window.openCitationModal = function(citId) {
   if (excerptEl) excerptEl.innerText = cit.excerpt || "No excerpt text available.";
 
   if (modal) modal.style.display = "flex";
-  if (window.lucide) lucide.createIcons();
 };
 
 window.closeCitationModal = function(event) {

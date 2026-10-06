@@ -5,13 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apex Drive AI — Grounded RAG Car Rental Assistant</title>
-  <meta name="description" content="Local CPU-powered grounded car rental AI assistant by Apex Drive with Hybrid RAG & Real-Time Streaming.">
+  <meta name="description" content="Local CPU-powered grounded car rental AI assistant by Apex Drive with Hybrid RAG &amp; Real-Time Streaming.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <link rel="stylesheet" href="/static/styles.css?v=2.1">
+  <link rel="stylesheet" href="/static/styles.css?v=3.0">
 </head>
 
 <body>
@@ -22,13 +21,6 @@
 
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="18,3 33,30 3,30" stroke="#ffffff" stroke-width="2" fill="none" stroke-linejoin="round"/>
-            <line x1="18" y1="3" x2="18" y2="30" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.45"/>
-            <circle cx="18" cy="18" r="3.5" fill="#ffffff" opacity="0.9"/>
-          </svg>
-        </div>
         <div class="brand-title">
           <h2>Apex Drive AI</h2>
           <span>Grounded RAG Assistant</span>
@@ -36,13 +28,12 @@
       </div>
 
       <button id="new-chat-btn" class="btn-new-chat">
-        <i data-lucide="plus" class="icon-sm"></i>
         New Inquiry
       </button>
 
       <!-- RAG Knowledge Base Status Card -->
       <div class="sidebar-section rag-status-box">
-        <h3><i data-lucide="database" class="icon-xs"></i> RAG Knowledge Base</h3>
+        <h3>RAG Knowledge Base</h3>
         <div class="rag-metrics-grid">
           <div class="rag-metric-item">
             <span class="metric-label">Corpus Docs</span>
@@ -64,37 +55,36 @@
       </div>
 
       <div class="sidebar-section">
-        <h3><i data-lucide="gauge" class="icon-xs"></i> Fleet &amp; Rates</h3>
+        <h3>Fleet &amp; Rates</h3>
         <div class="fleet-list">
           <div class="fleet-item">
-            <span class="fleet-item-left"><i data-lucide="car" class="icon-sm fleet-icon"></i>Economy (Corolla)</span>
+            <span class="fleet-item-left">Economy (Corolla)</span>
             <strong>$45/day</strong>
           </div>
           <div class="fleet-item">
-            <span class="fleet-item-left"><i data-lucide="truck" class="icon-sm fleet-icon"></i>SUV (Explorer 7-Seat)</span>
+            <span class="fleet-item-left">SUV (Explorer 7-Seat)</span>
             <strong>$85/day</strong>
           </div>
           <div class="fleet-item">
-            <span class="fleet-item-left"><i data-lucide="zap" class="icon-sm fleet-icon"></i>EV (Tesla Model 3)</span>
+            <span class="fleet-item-left">EV (Tesla Model 3)</span>
             <strong>$75/day</strong>
           </div>
           <div class="fleet-item">
-            <span class="fleet-item-left"><i data-lucide="gem" class="icon-sm fleet-icon"></i>Luxury (BMW 530i)</span>
+            <span class="fleet-item-left">Luxury (BMW 530i)</span>
             <strong>$125/day</strong>
           </div>
         </div>
       </div>
 
       <div class="sidebar-section">
-        <h3><i data-lucide="shield" class="icon-xs"></i> Protection Tiers</h3>
-        <p class="ins-text"><i data-lucide="shield" class="icon-xs ins-icon"></i><span><strong>Standard</strong> — Included ($1,500 ded.)</span></p>
-        <p class="ins-text"><i data-lucide="shield-check" class="icon-xs ins-icon"></i><span><strong>Silver</strong> — +$18/day ($300 ded.)</span></p>
-        <p class="ins-text"><i data-lucide="award" class="icon-xs ins-icon"></i><span><strong>Gold Platinum</strong> — +$30/day ($0 ded.)</span></p>
+        <h3>Protection Tiers</h3>
+        <p class="ins-text"><span><strong>Standard</strong> — Included ($1,500 ded.)</span></p>
+        <p class="ins-text"><span><strong>Silver</strong> — +$18/day ($300 ded.)</span></p>
+        <p class="ins-text"><span><strong>Gold Platinum</strong> — +$30/day ($0 ded.)</span></p>
       </div>
 
       <div class="sidebar-footer">
         <div class="status-dot"></div>
-        <i data-lucide="cpu" class="icon-xs" style="opacity:0.6"></i>
         <span>Local CPU Inference &amp; Embeddings</span>
       </div>
     </aside>
@@ -102,12 +92,10 @@
     <main class="chat-main">
       <header class="chat-header">
         <div class="header-title-group">
-          <i data-lucide="message-square-dot" class="icon-sm" style="opacity:0.7"></i>
           <h1>Apex Car Rental Assistant</h1>
           <span class="rag-badge">RAG Active</span>
         </div>
         <div class="header-metrics" id="header-metrics">
-          <i data-lucide="activity" class="icon-xs"></i>
           <span id="metrics-text">Ready</span>
         </div>
       </header>
@@ -124,19 +112,19 @@
           <p>Every response is dynamically retrieved from 75 internal policy documents with visible citations and zero hallucinations.</p>
           <div class="suggestions">
             <button class="chip" onclick="sendQuickPrompt('What does the Gold Platinum protection plan cover and what is the deductible?')">
-              <i data-lucide="shield-check" class="icon-sm"></i>Gold Protection &amp; Deductible
+              Gold Protection &amp; Deductible
             </button>
             <button class="chip" onclick="sendQuickPrompt('Can a 22-year-old rent a Tesla Model 3 and what are the fees?')">
-              <i data-lucide="user-check" class="icon-sm"></i>Young Driver &amp; EV Rules
+              Young Driver &amp; EV Rules
             </button>
             <button class="chip" onclick="sendQuickPrompt('What is the procedure if I get a flat tire on the highway?')">
-              <i data-lucide="alert-triangle" class="icon-sm"></i>Emergency Flat Tire Protocol
+              Emergency Flat Tire Protocol
             </button>
             <button class="chip" onclick="sendQuickPrompt('What are your fuel return rules and EV charging fees?')">
-              <i data-lucide="fuel" class="icon-sm"></i>Fuel &amp; Recharging Policy
+              Fuel &amp; Recharging Policy
             </button>
             <button class="chip" onclick="sendQuickPrompt('Can you write a Python script for binary search?')">
-              <i data-lucide="lock-keyhole" class="icon-sm"></i>Out-of-Domain Guardrail Test
+              Out-of-Domain Guardrail Test
             </button>
           </div>
         </div>
@@ -145,12 +133,9 @@
       <footer class="input-container">
         <form id="chat-form">
           <textarea id="message-input" placeholder="Ask about rental policies, vehicle specs, insurance, or emergency steps..." rows="1"></textarea>
-          <button type="submit" id="send-btn" aria-label="Send message">
-            <i data-lucide="arrow-up" class="icon-sm"></i>
-          </button>
+          <button type="submit" id="send-btn" aria-label="Send message">Send</button>
         </form>
         <p class="input-hint">
-          <i data-lucide="info" class="icon-xs"></i>
           Press <kbd>Enter</kbd> to send &nbsp;&middot;&nbsp; <kbd>Shift+Enter</kbd> for new line &nbsp;&middot;&nbsp; Hybrid RAG Grounded
         </p>
       </footer>
@@ -163,13 +148,12 @@
     <div class="modal-card" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-header-left">
-          <i data-lucide="file-text" class="icon-sm modal-icon"></i>
           <div>
             <h3 id="modal-doc-title">Document Title</h3>
             <span id="modal-doc-meta" class="modal-meta">Category | Section</span>
           </div>
         </div>
-        <button class="modal-close-btn" onclick="closeCitationModal()">&times;</button>
+        <button class="modal-close-btn" onclick="closeCitationModal(event)">&times;</button>
       </div>
       <div class="modal-body">
         <p class="modal-source-file">Source File: <code id="modal-source-file">file.md</code></p>
@@ -178,8 +162,7 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=2.1"></script>
-  <script>lucide.createIcons();</script>
+  <script src="/static/app.js?v=3.0"></script>
 </body>
 
 </html>
