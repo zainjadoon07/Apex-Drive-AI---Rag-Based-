@@ -165,6 +165,74 @@ def chunk_markdown_document(file_path: Path) -> List[Dict]:
     return chunks
 
 
+def chunk_pdf_document(file_path: Path) -> List[Dict]:
+    """
+    Extracts text from an enterprise PDF document using pypdf and splits into semantic chunks.
+    """
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        raise ImportError("pypdf is required to index PDF documents. Install via `pip install pypdf`.")
+
+    reader = PdfReader(str(file_path))
+    pages_text = [page.extract_text() or "" for page in reader.pages]
+    full_text = "\n".join(pages_text)
+
+    # Extract metadata from header lines
+    lines = [line.strip() for line in full_text.splitlines() if line.strip()]
+    doc_id = file_path.stem
+    doc_title = file_path.stem.replace("_", " ").title()
+    category = "General"
+
+    for line in lines[:10]:
+        if "CATEGORY:" in line:
+            category = line.split("CATEGORY:", 1)[1].strip()
+        elif "Document ID:" in line:
+            m = re.search(r"Document ID:\s*([A-Z0-9_-]+)", line)
+            if m:
+                doc_id = m.group(1)
+
+    if len(lines) > 1 and not lines[1].startswith("Document ID") and not lines[1].startswith("CATEGORY:"):
+        doc_title = lines[1]
+
+    # Split by section headers (common pattern in our generated PDFs)
+    sections = re.split(r'\n(?=[A-Z][A-Za-z0-9\s&,/-]{3,45}\n)', full_text)
+    if len(sections) <= 1:
+        sections = re.split(r'\n\n+', full_text)
+
+    chunks = []
+    chunk_idx = 0
+    for sec in sections:
+        sec = sec.strip()
+        if not sec or len(sec.split()) < 8:
+            continue
+
+        words = sec.split()
+        section_title = "Overview"
+        first_line = sec.splitlines()[0].strip()
+        if len(first_line) < 60 and not first_line.startswith("•") and not first_line.startswith("-"):
+            section_title = first_line
+
+        contextual_text = (
+            f"Document: {doc_title} | Category: {category} | Section: {section_title}\n"
+            f"{sec}"
+        )
+        chunk_id = f"{doc_id}_c{chunk_idx:02d}"
+        chunks.append({
+            "chunk_id": chunk_id,
+            "doc_id": doc_id,
+            "doc_title": doc_title,
+            "category": category,
+            "section_title": section_title,
+            "source_file": file_path.name,
+            "text": contextual_text,
+            "raw_body": sec
+        })
+        chunk_idx += 1
+
+    return chunks
+
+
 # --- 3. Tokenizer for BM25 Sparse Keyword Search ---
 
 def bm25_tokenize(text: str) -> List[str]:
@@ -189,11 +257,22 @@ class IndexPipeline:
             print(f"[Indexer] Model loaded in {(time.perf_counter() - t0):.2f}s")
         return self._embedder
 
-    def run(self, force: bool = False):
+    def run(self, force: bool = False, file_format: str = "md"):
         t_start = time.perf_counter()
-        doc_files = sorted(list(DOCS_DIR.glob("*.md")))
+        
+        # Determine target documents directory and file pattern
+        target_dir = DOCS_DIR
+        pattern = "*.md"
+        if file_format == "pdf":
+            # Check pdf_documents folder first, then documents folder
+            pdf_docs_dir = DATA_DIR / "pdf_documents"
+            if pdf_docs_dir.exists() and list(pdf_docs_dir.glob("*.pdf")):
+                target_dir = pdf_docs_dir
+            pattern = "*.pdf"
+
+        doc_files = sorted(list(target_dir.glob(pattern)))
         if not doc_files:
-            print(f"[Indexer] Error: No markdown documents found in {DOCS_DIR}")
+            print(f"[Indexer] Error: No {pattern} documents found in {target_dir}")
             return
 
         stored_hashes = load_stored_hashes()
@@ -207,16 +286,19 @@ class IndexPipeline:
         needs_rebuild = force or bool(added_files or modified_files or deleted_files) or not CHUNKS_FILE.exists()
 
         if not needs_rebuild:
-            print(f"[Indexer] All {len(doc_files)} documents are up-to-date. (0 modified, 0 added). Index is fresh!")
+            print(f"[Indexer] All {len(doc_files)} documents ({pattern}) are up-to-date. (0 modified, 0 added). Index is fresh!")
             return
 
-        print(f"[Indexer] Indexing required: {len(added_files)} added, {len(modified_files)} modified, {len(deleted_files)} removed (Force={force})")
+        print(f"[Indexer] Indexing required: {len(added_files)} added, {len(modified_files)} modified, {len(deleted_files)} removed (Force={force}, Format={file_format})")
 
         # Re-chunk all current documents
         all_chunks: List[Dict] = []
         for file_name in current_hashes:
-            file_path = DOCS_DIR / file_name
-            file_chunks = chunk_markdown_document(file_path)
+            file_path = target_dir / file_name
+            if file_path.suffix.lower() == ".pdf":
+                file_chunks = chunk_pdf_document(file_path)
+            else:
+                file_chunks = chunk_markdown_document(file_path)
             all_chunks.extend(file_chunks)
 
         print(f"[Indexer] Created {len(all_chunks)} semantic chunks from {len(doc_files)} documents.")
@@ -264,10 +346,12 @@ class IndexPipeline:
 def main():
     parser = argparse.ArgumentParser(description="Apex Car Rental Offline Indexer")
     parser.add_argument("--force", action="store_true", help="Force re-indexing of all documents from scratch")
+    parser.add_argument("--format", choices=["md", "pdf"], default="md", help="Document format to index (md or pdf)")
     args = parser.parse_args()
 
     pipeline = IndexPipeline()
-    pipeline.run(force=args.force)
+    pipeline.run(force=args.force, file_format=args.format)
 
 if __name__ == "__main__":
     main()
+

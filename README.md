@@ -45,9 +45,9 @@ flowchart TD
 
 ---
 
-## 2. Domain Document Collection (75 Realistic Documents)
+## 2. Domain Document Collection (75 Realistic Documents in MD & PDF)
 
-The knowledge base consists of **75 comprehensive, realistic markdown documents** stored in `data/documents/`, spanning 7 business categories for Apex Car Rental:
+The knowledge base consists of **75 comprehensive, realistic enterprise documents** available in both **Markdown (`.md`)** and **Corporate PDF (`.pdf`)** formats in `data/documents/` and `data/pdf_documents/`. Documents were authored and converted using [`convert_docs_to_pdf.py`](convert_docs_to_pdf.py) with formal corporate headers, metadata banners, page numbering, and category badges across 7 business categories for Apex Car Rental:
 
 | Category | Count | Sample Filenames | Topics Covered |
 |---|---|---|---|

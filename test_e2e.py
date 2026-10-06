@@ -29,8 +29,7 @@ def test_system():
     print("\n--- Test 2: Insurance Query ---")
     print(f"Query: {q2}")
     print(f"Latency: {res2.latency_ms} ms | Relevant: {res2.is_relevant}")
-    print(f"Top Source: {res2.citations[0]['source_file']} - {res2.citations[0]['title']}")
-    assert "insurance_03_gold_platinum_zero_deductible.md" in [c["source_file"] for c in res2.citations], "Test 2 failed"
+    assert any("insurance_03_gold_platinum_zero_deductible" in c.get("source_file", "") for c in res2.citations), "Test 2 failed"
     print("PASS: Correct Gold Platinum document retrieved.")
 
     # Test 3: Out-of-Domain Guardrail Fallback
