@@ -233,6 +233,15 @@ async def serve_frontend():
     return {"message": "Apex Car Rental API is running. Frontend index.html not found."}
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+@app.get("/favicon.jpg", include_in_schema=False)
+async def serve_favicon():
+    favicon_file = FRONTEND_DIR / "favicon.jpg"
+    if favicon_file.exists():
+        return FileResponse(str(favicon_file), media_type="image/jpeg")
+    return FileResponse(str(FRONTEND_DIR / "index.html"))  # fallback
+
+
 @app.on_event("startup")
 async def startup_event():
     try:
