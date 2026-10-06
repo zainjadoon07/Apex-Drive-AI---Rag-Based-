@@ -10,7 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="/static/styles.css?v=3.0">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="/static/styles.css?v=4.0">
 </head>
 
 <body>
@@ -28,12 +29,13 @@
       </div>
 
       <button id="new-chat-btn" class="btn-new-chat">
+        <i data-lucide="plus" class="icon-sm"></i>
         New Inquiry
       </button>
 
       <!-- RAG Knowledge Base Status Card -->
       <div class="sidebar-section rag-status-box">
-        <h3>RAG Knowledge Base</h3>
+        <h3><i data-lucide="database" class="icon-xs"></i> Knowledge Base</h3>
         <div class="rag-metrics-grid">
           <div class="rag-metric-item">
             <span class="metric-label">Corpus Docs</span>
@@ -55,7 +57,7 @@
       </div>
 
       <div class="sidebar-section">
-        <h3>Fleet &amp; Rates</h3>
+        <h3><i data-lucide="car" class="icon-xs"></i> Fleet &amp; Rates</h3>
         <div class="fleet-list">
           <div class="fleet-item">
             <span class="fleet-item-left">Economy (Corolla)</span>
@@ -77,7 +79,7 @@
       </div>
 
       <div class="sidebar-section">
-        <h3>Protection Tiers</h3>
+        <h3><i data-lucide="shield" class="icon-xs"></i> Protection Tiers</h3>
         <p class="ins-text"><span><strong>Standard</strong> — Included ($1,500 ded.)</span></p>
         <p class="ins-text"><span><strong>Silver</strong> — +$18/day ($300 ded.)</span></p>
         <p class="ins-text"><span><strong>Gold Platinum</strong> — +$30/day ($0 ded.)</span></p>
@@ -85,6 +87,7 @@
 
       <div class="sidebar-footer">
         <div class="status-dot"></div>
+        <i data-lucide="cpu" class="icon-xs footer-icon"></i>
         <span>Local CPU Inference &amp; Embeddings</span>
       </div>
     </aside>
@@ -96,6 +99,7 @@
           <span class="rag-badge">RAG Active</span>
         </div>
         <div class="header-metrics" id="header-metrics">
+          <i data-lucide="activity" class="icon-xs metrics-icon"></i>
           <span id="metrics-text">Ready</span>
         </div>
       </header>
@@ -112,18 +116,23 @@
           <p>Every response is dynamically retrieved from 75 internal policy documents with visible citations and zero hallucinations.</p>
           <div class="suggestions">
             <button class="chip" onclick="sendQuickPrompt('What does the Gold Platinum protection plan cover and what is the deductible?')">
+              <i data-lucide="shield-check" class="icon-sm chip-icon"></i>
               Gold Protection &amp; Deductible
             </button>
             <button class="chip" onclick="sendQuickPrompt('Can a 22-year-old rent a Tesla Model 3 and what are the fees?')">
+              <i data-lucide="user-check" class="icon-sm chip-icon"></i>
               Young Driver &amp; EV Rules
             </button>
             <button class="chip" onclick="sendQuickPrompt('What is the procedure if I get a flat tire on the highway?')">
+              <i data-lucide="triangle-alert" class="icon-sm chip-icon"></i>
               Emergency Flat Tire Protocol
             </button>
             <button class="chip" onclick="sendQuickPrompt('What are your fuel return rules and EV charging fees?')">
+              <i data-lucide="fuel" class="icon-sm chip-icon"></i>
               Fuel &amp; Recharging Policy
             </button>
             <button class="chip" onclick="sendQuickPrompt('Can you write a Python script for binary search?')">
+              <i data-lucide="ban" class="icon-sm chip-icon"></i>
               Out-of-Domain Guardrail Test
             </button>
           </div>
@@ -133,7 +142,9 @@
       <footer class="input-container">
         <form id="chat-form">
           <textarea id="message-input" placeholder="Ask about rental policies, vehicle specs, insurance, or emergency steps..." rows="1"></textarea>
-          <button type="submit" id="send-btn" aria-label="Send message">Send</button>
+          <button type="submit" id="send-btn" aria-label="Send message">
+            <i data-lucide="arrow-up" class="icon-sm"></i>
+          </button>
         </form>
         <p class="input-hint">
           Press <kbd>Enter</kbd> to send &nbsp;&middot;&nbsp; <kbd>Shift+Enter</kbd> for new line &nbsp;&middot;&nbsp; Hybrid RAG Grounded
@@ -148,21 +159,25 @@
     <div class="modal-card" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-header-left">
+          <i data-lucide="file-text" class="icon-sm modal-icon"></i>
           <div>
             <h3 id="modal-doc-title">Document Title</h3>
             <span id="modal-doc-meta" class="modal-meta">Category | Section</span>
           </div>
         </div>
-        <button class="modal-close-btn" onclick="closeCitationModal(event)">&times;</button>
+        <button class="modal-close-btn" onclick="closeCitationModal(event)" aria-label="Close">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
       </div>
       <div class="modal-body">
-        <p class="modal-source-file">Source File: <code id="modal-source-file">file.md</code></p>
+        <p class="modal-source-file"><i data-lucide="file" class="icon-xs" style="vertical-align:middle;opacity:0.5;"></i> Source: <code id="modal-source-file">file.md</code></p>
         <div class="modal-excerpt" id="modal-doc-excerpt">Excerpt content here...</div>
       </div>
     </div>
   </div>
 
-  <script src="/static/app.js?v=3.0"></script>
+  <script src="/static/app.js?v=4.0"></script>
+  <script>lucide.createIcons();</script>
 </body>
 
 </html>

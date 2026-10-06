@@ -150,6 +150,26 @@ body {
 }
 .icon-sm svg { width: 16px; height: 16px; }
 
+.chip-icon {
+  opacity: 0.75;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.chip:hover .chip-icon {
+  opacity: 1;
+}
+
+.footer-icon {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.metrics-icon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
 /* ==========================================================================
    Sidebar Navigation
    ========================================================================== */
@@ -757,14 +777,14 @@ body {
   color: var(--text-muted-white);
 }
 
-/* Send Button — text label */
+/* Send Button — icon only */
 #send-btn {
   background: var(--text-full-white);
   color: #000000;
   border: 1px solid var(--text-full-white);
-  padding: 0 18px;
+  width: 36px;
   height: 36px;
-  min-width: 60px;
+  min-width: 36px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
@@ -772,16 +792,13 @@ body {
   cursor: pointer;
   transition: var(--transition-smooth);
   flex-shrink: 0;
-  font-family: var(--font-body);
-  font-size: 0.85rem;
-  font-weight: 600;
 }
 
 #send-btn:hover {
   background: #000000;
   color: #ffffff;
   border-color: #ffffff;
-  transform: scale(1.05);
+  transform: scale(1.08);
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.18);
 }
 

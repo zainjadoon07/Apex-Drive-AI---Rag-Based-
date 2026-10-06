@@ -176,6 +176,7 @@ function renderCitations(bubbleEl, citations, retrievalMs, isCached) {
   pillsHTML += '</div>';
 
   shelfEl.innerHTML = headerHTML + pillsHTML;
+  lucide.createIcons();
 }
 
 // Citation Modal Viewer (Interactive Excerpt Drawer)
@@ -198,6 +199,7 @@ window.openCitationModal = function(citId) {
   if (excerptEl) excerptEl.innerText = cit.excerpt || "No excerpt text available.";
 
   if (modal) modal.style.display = "flex";
+  lucide.createIcons();
 };
 
 window.closeCitationModal = function(event) {
