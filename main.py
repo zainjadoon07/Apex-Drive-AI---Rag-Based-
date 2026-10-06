@@ -4,6 +4,7 @@ Interactive Citations, and Concurrency Support.
 """
 
 import json
+import re
 import time
 from pathlib import Path
 from typing import Optional
@@ -20,6 +21,34 @@ from prompts import build_rag_prompt_messages
 from llm import stream_llm_response
 
 app = FastAPI(title="Apex Car Rental AI Assistant (RAG Enabled)")
+
+# ---------------------------------------------------------------------------
+# Pre-flight out-of-domain guardrail — hard block before LLM is ever called.
+# Catches coding tasks, general knowledge, medical, legal, and other off-topic
+# queries that the system prompt alone fails to reliably reject.
+# ---------------------------------------------------------------------------
+_OOD_PATTERNS = re.compile(
+    r"\b("
+    # Programming / code
+    r"python|javascript|java\b|c\+\+|c#|rust|golang|php|ruby|swift|kotlin|typescript"
+    r"|write.*code|code.*for|implement.*algorithm|algorithm|dijkstra|binary.*search"
+    r"|sorting|recursion|\bscript\b|program(?:me|ming)|function|class definition"
+    r"|data structure|linked list|stack|queue|tree|graph.*algorithm|dynamic.*program"
+    r"|leetcode|hackerrank|regex.*pattern|sql.*query|api.*endpoint"
+    # Science / homework
+    r"|\bmath\b|calculus|integral|derivative|equation|theorem|proof"
+    r"|biology|chemistry|physics|history.*war|essay|summarize.*article"
+    r"|translate.*to|what.*capital.*of|who.*invented|when.*born"
+    # Medical / legal
+    r"|diagnos|symptom|medication|dosage|legal.*advice|lawsuit|copyright"
+    r"|recipe|cook|ingredient"
+    r")\b",
+    re.IGNORECASE,
+)
+
+def is_out_of_domain(message: str) -> bool:
+    """Returns True if the message is clearly outside the car rental domain."""
+    return bool(_OOD_PATTERNS.search(message))
 
 FRONTEND_DIR = Path(__file__).resolve().parent / "frontend"
 
@@ -87,10 +116,33 @@ async def websocket_chat_endpoint(websocket: WebSocket):
                 await websocket.send_json({"type": "error", "message": "Invalid JSON format"})
                 continue
 
+            # Handle stop_stream signal — client aborted generation
+            if data.get("type") == "stop_stream":
+                await websocket.send_json({"type": "stopped"})
+                continue
+
             session_id = data.get("session_id", "default_user")
             user_message = data.get("message", "").strip()
 
             if not user_message:
+                continue
+
+            # 2. Pre-flight out-of-domain guardrail (hard block — runs before LLM)
+            if is_out_of_domain(user_message):
+                blocked_msg = (
+                    "I'm Apex Drive AI, the official assistant for Apex Car Rental. "
+                    "I can only help with vehicle selection, rental rates, insurance coverage, "
+                    "pickup and return policies, and roadside emergencies. "
+                    "I'm not able to assist with that request. "
+                    "How can I help you with your car rental today?"
+                )
+                await websocket.send_json({"type": "token", "content": blocked_msg})
+                await websocket.send_json({
+                    "type": "end",
+                    "metrics": {"retrieval_ms": 0, "ttft_ms": 0, "tps": 0,
+                                "total_time_s": 0, "is_cached": False,
+                                "is_relevant": False, "citations_count": 0}
+                })
                 continue
 
             # 2. Retrieve conversation session

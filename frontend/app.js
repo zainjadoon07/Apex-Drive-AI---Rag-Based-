@@ -13,6 +13,21 @@ const messageInput = document.getElementById("message-input");
 const welcomeBox = document.getElementById("welcome-box");
 const newChatBtn = document.getElementById("new-chat-btn");
 const headerMetrics = document.getElementById("header-metrics");
+const sendBtn = document.getElementById("send-btn");
+
+// Toggle send button between arrow-up (idle) and square (stop)
+function setSendButtonState(streaming) {
+  if (streaming) {
+    sendBtn.innerHTML = '<i data-lucide="square" class="icon-sm"></i>';
+    sendBtn.title = "Stop generation";
+    sendBtn.classList.add("stop-mode");
+  } else {
+    sendBtn.innerHTML = '<i data-lucide="arrow-up" class="icon-sm"></i>';
+    sendBtn.title = "Send message";
+    sendBtn.classList.remove("stop-mode");
+  }
+  lucide.createIcons();
+}
 
 // Fetch initial health & RAG corpus status
 async function loadHealthStatus() {
@@ -71,8 +86,24 @@ function connectWebSocket() {
       }
 
       // 3. Final completion packet received
-      else if (data.type === "end") {
+      else if (data.type === "end" || data.type === "stopped") {
         isStreaming = false;
+        setSendButtonState(false);
+
+        if (data.type === "stopped") {
+          if (currentBotBubble) {
+            const contentEl = currentBotBubble.querySelector(".content");
+            if (contentEl && currentBotText) {
+              contentEl.innerHTML = (window.marked ? marked.parse(currentBotText) : currentBotText)
+                + '<span class="stopped-label">— Generation stopped</span>';
+            }
+          }
+          currentBotBubble = null;
+          currentBotText = "";
+          currentCitations = [];
+          messageInput.focus();
+          return;
+        }
 
         if (currentBotBubble) {
           const contentEl = currentBotBubble.querySelector(".content");
@@ -103,7 +134,7 @@ function connectWebSocket() {
         currentBotText = "";
         currentCitations = [];
         messageInput.focus();
-
+        setSendButtonState(false);
       }
 
       // 4. Error packet
@@ -112,10 +143,11 @@ function connectWebSocket() {
         if (currentBotBubble) {
           const contentEl = currentBotBubble.querySelector(".content");
           if (contentEl) {
-            contentEl.innerHTML = `<span style="color:#ff6b6b;">⚠️ ${data.message}</span>`;
+            contentEl.innerHTML = `<span class="error-msg">${data.message}</span>`;
           }
         }
         isStreaming = false;
+        setSendButtonState(false);
       }
     } catch (err) {
       console.error("Error parsing WebSocket packet:", err);
@@ -235,6 +267,7 @@ function sendMessage(text) {
   currentBotText = "";
   currentCitations = [];
   isStreaming = true;
+  setSendButtonState(true);
 
   // 3. Clear Input
   messageInput.value = "";
@@ -282,13 +315,34 @@ function sendQuickPrompt(promptText) {
 // Event Listeners
 chatForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  sendMessage();
+  if (isStreaming) {
+    // Send stop signal to server
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: "stop_stream" }));
+    }
+    isStreaming = false;
+    setSendButtonState(false);
+    // Finalize what has been streamed so far
+    if (currentBotBubble) {
+      const contentEl = currentBotBubble.querySelector(".content");
+      if (contentEl && currentBotText) {
+        contentEl.innerHTML = (window.marked ? marked.parse(currentBotText) : currentBotText)
+          + '<span class="stopped-label"> — Stopped</span>';
+      }
+    }
+    currentBotBubble = null;
+    currentBotText = "";
+    currentCitations = [];
+    messageInput.focus();
+  } else {
+    sendMessage();
+  }
 });
 
 messageInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
-    sendMessage();
+    if (!isStreaming) sendMessage();
   }
 });
 

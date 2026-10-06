@@ -802,6 +802,34 @@ body {
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.18);
 }
 
+/* Stop mode — shown during streaming */
+#send-btn.stop-mode {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+#send-btn.stop-mode:hover {
+  background: rgba(255, 80, 80, 0.18);
+  border-color: rgba(255, 80, 80, 0.7);
+  color: #ff6b6b;
+  box-shadow: 0 0 14px rgba(255, 80, 80, 0.2);
+  transform: scale(1.08);
+}
+
+/* Stopped / error inline labels */
+.stopped-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted-white);
+  font-style: italic;
+}
+
+.error-msg {
+  color: #ff6b6b;
+}
+
 /* Input hint bar */
 .input-hint {
   font-size: 0.72rem;
